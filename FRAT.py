@@ -6,7 +6,7 @@ import os
 from datetime import datetime
 # from PIL import ImageGrab
  
-path = 'C:/VS_Code/python/OpenCV/testImages'
+path = 'C:/VS_Code/Senior_Design/testImages'
 images = []
 classNames = []
 myList = os.listdir(path)
@@ -27,7 +27,7 @@ def findEncodings(images):
     return encodeList
     
 def markAttendance(name):
-    with open('C:/VS_Code/python/OpenCV/Attendance.csv','r+') as f:
+    with open('C:/VS_Code/Senior_Design/Attendance.csv','r+') as f:
         myDataList = f.readlines()
         nameList = []
         for line in myDataList:
