@@ -6,7 +6,7 @@ import os
 from datetime import datetime
 
  
-path = 'C:/VS_Code/Senior_Design/testImages'
+path = '/home/frat/Documents/gitProjects/Senior_Design_2020/testImages'
 images = []
 classNames = []
 myList = os.listdir(path)
@@ -25,7 +25,7 @@ def findEncodings(images):
     return encodeList
     
 def markAttendance(name):
-    with open('C:/VS_Code/Senior_Design/Attendance.csv','r+') as f:
+    with open('/home/frat/Documents/gitProjects/Senior_Design_2020/Attendance.csv','r+') as f:
         myDataList = f.readlines()
         nameList = []
         for line in myDataList:
@@ -64,7 +64,7 @@ encodeListKnown = findEncodings(images)
 print('Encoding Complete')
 
  
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(2)
  
 while True:
     success, img = cap.read()
