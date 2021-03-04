@@ -4,12 +4,22 @@ import numpy as np
 import face_recognition
 import os
 from datetime import datetime
+import sys
+import mysql.connector 
+
+conn = mysql.connector.connect(user='frat' , password='ELEG4482', host='localhost' , database='Face_Recognition')
+
+cursor = conn.cursor()
+
+if conn.is_connected():
+    print('Connected to MySQL database')
 
  
 path = '/home/frat/Documents/gitProjects/Senior_Design_2020/testImages'
 images = []
 classNames = []
 myList = os.listdir(path)
+nameList= []
 print(myList)
 for cl in myList:
     curImg = cv2.imread(f'{path}/{cl}')
@@ -24,17 +34,42 @@ def findEncodings(images):
         encodeList.append(encode)
     return encodeList
     
+# def markAttendance(name):
+#     # with open('/home/frat/Documents/gitProjects/Senior_Design_2020/Attendance.csv','r+') as f:
+#     # #     myDataList = f.readlines()
+#     #     nameList = []
+#         # for line in myDataList:
+#         #     entry = line.split(',')
+#         #     nameList.append(entry[0])
+#         if name not in nameList:
+#             nameList.append(name)
+#             print(nameList)
+#             # now = datetime.now()
+#             # dtString = now.strftime('%H:%M:%S')
+#             # f.writelines(f'\n{name},{dtString}')
+
+def showAttendance():
+    cursor.execute("Select * from Attendance")
+    result = cursor.fetchall()
+    for x in result:
+        print(x)
+
+
 def markAttendance(name):
-    with open('/home/frat/Documents/gitProjects/Senior_Design_2020/Attendance.csv','r+') as f:
-        myDataList = f.readlines()
-        nameList = []
-        for line in myDataList:
-            entry = line.split(',')
-            nameList.append(entry[0])
-        if name not in nameList:
-            now = datetime.now()
-            dtString = now.strftime('%H:%M:%S')
-            f.writelines(f'\n{name},{dtString}')
+    now = datetime.now()
+    dtString = now.strftime('%H:%M:%S')
+
+    if name not in nameList:
+        nameList.append(name)
+        sql = "Insert INTO Attendance VALUES(%s,%s)"
+        val = (name,dtString)
+        cursor.execute(sql,val)
+        conn.commit()
+
+def clearAttendanceTable():
+    sql= "DELETE FROM Attendance"
+    cursor.execute(sql)
+    conn.commit()
 
 def running_on_jetson_nano():
     # To make the same code work on a laptop or on a Jetson Nano, we'll detect when we are running on the Nano
@@ -91,3 +126,4 @@ while True:
     cv2.imshow('F.R.A.T',img)
     if cv2.waitKey(1) & 0xFF == ord('q'):
             break
+     

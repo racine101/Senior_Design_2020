@@ -1,5 +1,6 @@
 import sys
 import mysql.connector 
+from datetime import datetime
 
 conn = mysql.connector.connect(user='frat' , password='ELEG4482', host='localhost' , database='Face_Recognition')
 
@@ -17,15 +18,35 @@ if conn.is_connected():
 # data = cursor.fetchall()
 # print(data)
 
-cursor.execute(""" SHOW TABLES""")
+# cursor.execute(""" SHOW TABLES""")
+def showAttendance():
+    cursor.execute("Select * from Attendance")
+    result = cursor.fetchall()
+    for x in result:
+        print(x)
 
-cursor.execute("Select * from Student")
-result = cursor.fetchall()
-for x in result:
-    print(x)
+# data = cursor.fetchall()
+# print(data)
 
-data = cursor.fetchall()
-print(data)
+def markAttendance(name):
+    now = datetime.now()
+    dtString = now.strftime('%H:%M:%S')
+
+    nameList = []
+    if name not in nameList:
+        nameList.append(name)
+        sql = "Insert INTO Attendance VALUES(%s,%s)"
+        val = (name,dtString)
+        cursor.execute(sql,val)
+        conn.commit()
+
+def clearAttendanceTable():
+    sql= "DELETE FROM Attendance"
+    cursor.execute(sql)
+    conn.commit()
+
+showAttendance()
+
 
 
 conn.close()
