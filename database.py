@@ -45,8 +45,7 @@ def clearAttendanceTable():
     cursor.execute(sql)
     conn.commit()
 
-showAttendance()
-
+clearAttendanceTable()
 
 
 conn.close()

@@ -125,5 +125,7 @@ while True:
  
     cv2.imshow('F.R.A.T',img)
     if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+        showAttendance()
+        clearAttendanceTable()
+        break
      
