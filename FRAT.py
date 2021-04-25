@@ -6,6 +6,18 @@ import os
 from datetime import datetime
 import sys
 import mysql.connector 
+import email_local
+
+def clearAttendanceCSV():
+    f = open('/home/frat/Documents/gitProjects/Senior_Design_2020/Attendance.csv','r+') 
+    f.truncate(0)
+    f.close()
+def writeAttendanceCSV():
+    f = open('/home/frat/Documents/gitProjects/Senior_Design_2020/Attendance.csv','r+') 
+    f.writelines("Name,Time")
+
+clearAttendanceCSV()
+writeAttendanceCSV()
 
 conn = mysql.connector.connect(user='frat' , password='ELEG4482', host='localhost' , database='Face_Recognition')
 
@@ -15,12 +27,12 @@ if conn.is_connected():
     print('Connected to MySQL database')
 
  
-path = '/home/frat/Documents/gitProjects/Senior_Design_2020/testImages'
+path = '/home/frat/Documents/gitProjects/Senior_Design_2020/testImages' 
 images = []
 classNames = []
 myList = os.listdir(path)
 nameList= []
-print(myList)
+print(  myList)
 for cl in myList:
     curImg = cv2.imread(f'{path}/{cl}')
     images.append(curImg)
@@ -34,19 +46,35 @@ def findEncodings(images):
         encodeList.append(encode)
     return encodeList
     
-# def markAttendance(name):
-#     # with open('/home/frat/Documents/gitProjects/Senior_Design_2020/Attendance.csv','r+') as f:
-#     # #     myDataList = f.readlines()
-#     #     nameList = []
-#         # for line in myDataList:
-#         #     entry = line.split(',')
-#         #     nameList.append(entry[0])
+# def markAttendanceCSV(name):
+#     with open('/home/frat/Documents/gitProjects/Senior_Design_2020/Attendance.csv','r+') as f:
+#         myDataList = f.readlines()
+#         AttendanceList = []
+#         for line in myDataList:
+#             entry = line.split(',')
+#             AttendanceList.append(entry[0])
 #         if name not in nameList:
-#             nameList.append(name)
-#             print(nameList)
-#             # now = datetime.now()
-#             # dtString = now.strftime('%H:%M:%S')
-#             # f.writelines(f'\n{name},{dtString}')
+#             AttendanceList.append(name)
+#             print( AttendanceList)
+#             now = datetime.now()
+#             dtString = now.strftime('%H:%M:%S')
+#             f.writelines(f'\n{name},{dtString}')
+
+
+
+def markAttendanceCSV(name):
+    with open('/home/frat/Documents/gitProjects/Senior_Design_2020/Attendance.csv','r+') as f:
+        myDataList = f.readlines()
+        AttendanceList = []
+        for line in myDataList:
+            entry = line.split(',')
+            AttendanceList.append(entry[0])
+        if name not in AttendanceList:
+            AttendanceList.append(name)
+            # print( AttendanceList)
+            now = datetime.now()
+            dtString = now.strftime('%H:%M:%S')
+            f.writelines(f'\n{name},{dtString}')
 
 def showAttendance():
     cursor.execute("Select * from Attendance")
@@ -90,10 +118,6 @@ def get_jetson_gstreamer_source(capture_width=1280, capture_height=720, display_
             f'video/x-raw, width=(int){display_width}, height=(int){display_height}, format=(string)BGRx ! ' +
             'videoconvert ! video/x-raw, format=(string)BGR ! appsink'
             )
-
-
-            
-
  
 encodeListKnown = findEncodings(images)
 print('Encoding Complete')
@@ -122,10 +146,24 @@ while True:
             cv2.rectangle(img,(x1,y2-35),(x2,y2),(0,255,0),cv2.FILLED)
             cv2.putText(img,name,(x1+6,y2-6),cv2.FONT_HERSHEY_COMPLEX,1,(255,255,255),2)
             markAttendance(name)
- 
-    cv2.imshow('F.R.A.T',img)
+            markAttendanceCSV(name)
+        else:
+            y1,x2,y2,x1 = faceLoc
+            y1, x2, y2, x1 = y1*4,x2*4,y2*4,x1*4
+            cv2.rectangle(img,(x1,y1),(x2,y2),(0,0,255),2)
+            cv2.rectangle(img,(x1,y2-35),(x2,y2),(0,0,255),cv2.FILLED)
+            cv2.putText(img,"Unknown",(x1+6,y2-6),cv2.FONT_HERSHEY_COMPLEX,1,(255,255,255),2)
+    
+    
+
+
+    imgr = cv2.resize(img, (940, 540))
+    cv2.imshow('F.R.A.T',imgr)
     if cv2.waitKey(1) & 0xFF == ord('q'):
+        
         showAttendance()
         clearAttendanceTable()
+        email_local.send_Email()
         break
-     
+    
+
