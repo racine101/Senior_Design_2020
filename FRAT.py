@@ -33,10 +33,13 @@ classNames = []
 myList = os.listdir(path)
 nameList= []
 print(  myList)
-for cl in myList:
-    curImg = cv2.imread(f'{path}/{cl}')
-    images.append(curImg)
-    classNames.append(os.path.splitext(cl)[0])
+def forLoop() :
+    for cl in myList:
+        curImg = cv2.imread(f'{path}/{cl}')
+        images.append(curImg)
+        classNames.append(os.path.splitext(cl)[0])
+
+forLoop()
  
 def findEncodings(images):
     encodeList = []
@@ -166,4 +169,5 @@ while True:
         email_local.send_Email()
         break
     
+
 
